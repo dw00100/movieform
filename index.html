@@ -1,81 +1,210 @@
-<Html>  
-    <head>   
-    <title>  
-   Binge Watch Online  
-    </title>  
-    </head>  
-    <body bgcolor="Lightskyblue" align="center">  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Name Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
 
-     <H1 > Dana Cahill's Binge Watch Online - West US</H1>
-	   Hello ! Please enter your favorite movie below: <br>   <br> 
-    <form >  
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            animation: fadeIn 1s ease-out;
+        }
 
-    <label> Firstname </label>         
-    <input type="text" name="firstname" size="15"/> <br> <br>  
-    <label> Lastname: </label>         
-    <input type="text" name="lastname" size="15"/> <br> <br>  
-     
-    <label>   
-        Gender :  
-        </label><br>  
-        <input type="radio" name="male"/> Male <br>  
-        <input type="radio" name="female"/> Female <br>  
-        <input type="radio" name="other"/> Other  <br>  
-        <br>  
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
+        h1 {
+            color: #4a5568;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+            font-weight: 300;
+        }
 
-    <label>   
-        Phone :  
-        </label>  
-        <input type="text" name="country code"  value="+91" size="2"/>   
-        <input type="text" name="phone" size="10"/> <br> <br>  
+        .subtitle {
+            color: #718096;
+            margin-bottom: 2.5rem;
+            font-size: 1.1rem;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        .result-container {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f7fafc;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .result-container.show {
+            opacity: 1;
+        }
+
+        .letter-display {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .name-display {
+            font-size: 2rem;
+            color: #4a5568;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .letter-label {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .name-label {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .sparkle {
+            display: inline-block;
+            animation: sparkle 2s infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✨ Random Name Generator</h1>
+        <p class="subtitle">Click the button to get a random letter and a beautiful name starting with that letter!</p>
         
-        Email:  
-        <input type="email" id="email" name="email"/> <br>    
-        <br> <br>  
+        <button class="generate-btn" onclick="generateName()">
+            🎲 Generate Random Name
+        </button>
+        
+        <div id="result" class="result-container">
+            <div class="letter-label">Random Letter:</div>
+            <div id="letter" class="letter-display">?</div>
+            <div class="name-label">Generated Name:</div>
+            <div id="name" class="name-display">Click the button above!</div>
+        </div>
+    </div>
 
-        Password:  
-        <input type="Password" id="pass" name="pass"> <br>   
-        <br> <br> 
+    <script>
+        const namesByLetter = {
+            'A': ['Alexander', 'Aria', 'Adrian', 'Amelia', 'Austin', 'Ava', 'Anthony', 'Abigail', 'Andrew', 'Anna'],
+            'B': ['Benjamin', 'Bella', 'Blake', 'Brooklyn', 'Brandon', 'Brianna', 'Brian', 'Bethany', 'Bradley', 'Brooke'],
+            'C': ['Christopher', 'Charlotte', 'Connor', 'Chloe', 'Caleb', 'Claire', 'Cameron', 'Caroline', 'Christian', 'Camila'],
+            'D': ['Daniel', 'Diana', 'David', 'Delilah', 'Dylan', 'Daisy', 'Dominic', 'Destiny', 'Derek', 'Daniela'],
+            'E': ['Ethan', 'Emma', 'Evan', 'Emily', 'Edward', 'Elizabeth', 'Elijah', 'Ella', 'Eric', 'Evelyn'],
+            'F': ['Felix', 'Fiona', 'Finn', 'Faith', 'Francisco', 'Freya', 'Fernando', 'Francesca', 'Frederick', 'Felicia'],
+            'G': ['Gabriel', 'Grace', 'George', 'Gabriella', 'Grant', 'Gianna', 'Gavin', 'Genesis', 'Gregory', 'Giselle'],
+            'H': ['Henry', 'Hannah', 'Hunter', 'Haley', 'Harrison', 'Hope', 'Hudson', 'Harper', 'Hugo', 'Helena'],
+            'I': ['Isaac', 'Isabella', 'Ian', 'Iris', 'Ivan', 'Ivy', 'Isaiah', 'Isabelle', 'Ignacio', 'Ingrid'],
+            'J': ['James', 'Julia', 'Jackson', 'Jasmine', 'Jacob', 'Jessica', 'Joshua', 'Jennifer', 'Julian', 'Jade'],
+            'K': ['Kevin', 'Katherine', 'Kyle', 'Kimberly', 'Kenneth', 'Kayla', 'Keith', 'Kennedy', 'Kai', 'Kylie'],
+            'L': ['Logan', 'Luna', 'Lucas', 'Lily', 'Liam', 'Layla', 'Leonardo', 'Leah', 'Louis', 'Lucy'],
+            'M': ['Michael', 'Maya', 'Matthew', 'Mia', 'Mason', 'Madison', 'Marcus', 'Michelle', 'Martin', 'Melanie'],
+            'N': ['Nicholas', 'Natalie', 'Noah', 'Nora', 'Nathan', 'Nicole', 'Neil', 'Naomi', 'Nolan', 'Nina'],
+            'O': ['Oliver', 'Olivia', 'Oscar', 'Ophelia', 'Owen', 'Octavia', 'Orion', 'Odette', 'Otis', 'Opal'],
+            'P': ['Peter', 'Penelope', 'Patrick', 'Paige', 'Paul', 'Piper', 'Philip', 'Priscilla', 'Preston', 'Paris'],
+            'Q': ['Quinton', 'Quinn', 'Quentin', 'Queenie', 'Quade', 'Quintessa', 'Quincy', 'Quiana', 'Quest', 'Quilla'],
+            'R': ['Ryan', 'Rachel', 'Robert', 'Rebecca', 'Richard', 'Rose', 'Roman', 'Ruby', 'Rafael', 'Riley'],
+            'S': ['Samuel', 'Sophia', 'Sebastian', 'Sarah', 'Steven', 'Stella', 'Scott', 'Samantha', 'Sean', 'Scarlett'],
+            'T': ['Thomas', 'Taylor', 'Tyler', 'Tessa', 'Timothy', 'Trinity', 'Tristan', 'Tiffany', 'Trevor', 'Tiana'],
+            'U': ['Ulysses', 'Uma', 'Uriel', 'Ursula', 'Upton', 'Unity', 'Urban', 'Unique', 'Ulrich', 'Ultima'],
+            'V': ['Vincent', 'Victoria', 'Victor', 'Vanessa', 'Valentino', 'Violet', 'Vance', 'Valerie', 'Vaughn', 'Vera'],
+            'W': ['William', 'Willow', 'Wesley', 'Whitney', 'Walter', 'Wendy', 'Warren', 'Wanda', 'Wade', 'Winter'],
+            'X': ['Xavier', 'Ximena', 'Xander', 'Xara', 'Xerxes', 'Xenia', 'Xavi', 'Xiomara', 'Xzavier', 'Xyla'],
+            'Y': ['Yusuf', 'Yasmin', 'Yale', 'Yvonne', 'York', 'Yolanda', 'Yves', 'Yara', 'Yordan', 'Yana'],
+            'Z': ['Zachary', 'Zoe', 'Zane', 'Zara', 'Zeus', 'Zelda', 'Zion', 'Zoey', 'Zavier', 'Zora']
+        };
 
-        Re-type password:  
-        <input type="Password" id="repass" name="repass"> <br> <br>  
+        function generateName() {
+            // Get random letter from A-Z
+            const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const randomLetter = letters[Math.floor(Math.random() * letters.length)];
+            
+            // Get random name from that letter's array
+            const namesForLetter = namesByLetter[randomLetter];
+            const randomName = namesForLetter[Math.floor(Math.random() * namesForLetter.length)];
+            
+            // Update display
+            document.getElementById('letter').textContent = randomLetter;
+            document.getElementById('name').textContent = randomName;
+            
+            // Show result container with animation
+            const resultContainer = document.getElementById('result');
+            resultContainer.classList.add('show');
+            
+            // Add sparkle effect to letter
+            const letterElement = document.getElementById('letter');
+            letterElement.classList.add('sparkle');
+            setTimeout(() => {
+                letterElement.classList.remove('sparkle');
+            }, 2000);
+        }
 
-    <label>   
-        Movie Genres :  
-    </label>   
-    <select>  
-    <option value="Movie Genres">Movie Genres</option>  
-    <option value="Action">Action</option>  
-    <option value="Romance">Romance</option>  
-    <option value="Adventure">Adventure</option>  
-    <option value="Horror">Horror</option>  
-    <option value="Animation">Animation</option>  
-    <option value="Comedy">Comedy</option>  
-    </select>  
-    <br> <br>
-
-    <label>   
-        Plans :  
-    </label>   
-    <select> 
-    <option value="Plans">Plans</option>     
-    <option value="Monthly Plan">Monthly Plan</option>  
-    <option value="Half-yearly Plan">Half-yearly Plan</option>  
-    <option value="Yearly Plan">Yearly Plan</option>  
-    </select>  
-     
-
-    <p>By creating an account you agree to our <a href="#">Terms & Privacy</a>.</p>
-    <br>  
-    <br>
-    
-    <a href="thankyou.html"><input type="button" value="Submit"></a> 
-    <input type="reset" value="Reset"> 
-    
-      
-      
-    </form>  
-    </body>  
-    </html>  
+        // Show result container on page load
+        window.addEventListener('load', () => {
+            document.getElementById('result').classList.add('show');
+        });
+    </script>
+</body>
+</html>
